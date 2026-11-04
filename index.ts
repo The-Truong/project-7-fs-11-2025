@@ -1,10 +1,22 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import cors from 'cors';
+import routes from './routes/index.route';
+
 const app = express()
 const port = 4000
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!')
-})
+//cấu hình cors
+app.use(cors({
+  origin: '*', //đường dẫn frontend của bạn
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// cho phép gửi data lên ở dạng json, chuyển dữ liệu từ json sang js
+app.use(express.json());
+
+//thiết lập đường dẫn
+app.use('/', routes);
 
 app.listen(port, () => {
   console.log(`Website đang chạy trên cổng ${port}`)
