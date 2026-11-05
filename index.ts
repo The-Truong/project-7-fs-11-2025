@@ -4,14 +4,15 @@ dotenv.config();
 import cors from 'cors';
 import routes from './routes/index.route';
 import { connectDB } from './configs/database.config';
+import cookieParser from 'cookie-parser';
 
 const app = express()
 const port = 4000
 
-//kết nối db
+// kết nối db
 connectDB();
 
-//cấu hình cors
+// cấu hình cors
 app.use(cors({
   origin: 'http://localhost:3000', //đường dẫn frontend của bạn
   credentials: true, // cho phép gửi dữ liệu cookie
@@ -22,7 +23,10 @@ app.use(cors({
 // cho phép gửi data lên ở dạng json, chuyển dữ liệu từ json sang js
 app.use(express.json());
 
-//thiết lập đường dẫn
+// sử dụng cookie-parse
+app.use(cookieParser());
+
+// thiết lập đường dẫn
 app.use('/', routes);
 
 app.listen(port, () => {
