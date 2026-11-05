@@ -75,7 +75,8 @@ export const loginPost = async (req: Request, res: Response) => {
     res.cookie('token', token, {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true, //chỉ cho phép gửi bên server
-      sameSite: 'strict',
+      secure: process.env.NODE_ENV === "production", //(nếu là https để là true, nếu là http để là false bảo mật)
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", //cho phép gửi khác tên miền (nếu là https để là none, nếu là http để là lax)
     });
   
     res.json({
