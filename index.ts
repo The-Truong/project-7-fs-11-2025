@@ -1,9 +1,15 @@
 import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config();
 import cors from 'cors';
 import routes from './routes/index.route';
+import { connectDB } from './configs/database.config';
 
 const app = express()
 const port = 4000
+
+//kết nối db
+connectDB();
 
 //cấu hình cors
 app.use(cors({
