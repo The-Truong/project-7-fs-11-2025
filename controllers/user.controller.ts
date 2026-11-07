@@ -65,6 +65,7 @@ export const loginPost = async (req: Request, res: Response) => {
       {
         id: existAccount.id,
         email: existAccount.email,
+        type: "user"
       },
       `${process.env.JWT_SECRET}`,
       {
