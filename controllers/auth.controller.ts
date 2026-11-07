@@ -51,3 +51,19 @@ export const check = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("token");
+    res.json({
+      code: "success",
+      message: "Đã đăng xuất"
+    })
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Đăng xuất không thành công!"
+    })
+  }
+}
