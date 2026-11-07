@@ -57,7 +57,7 @@ export const check = async (req: Request, res: Response) => {
         res.json({
           code: "success",
           message: "Thành công!",
-          infoUser: infoCompany,
+          infoCompany: infoCompany,
         })
         return;
       }
