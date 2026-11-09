@@ -1,8 +1,13 @@
 import { Router } from "express";
+import multer from "multer";
 import * as userController from '../controllers/user.controller';
 import * as userValidate from '../validates/user.validate';
+import { storage } from "../helpers/cloudinary.helper";
+import { verifyTokenUser } from "../middlewares/auth.middleware";
 
 const router = Router();
+
+const upload = multer({ storage: storage });
 
 router.post('/register',
     userValidate.registerPost,
@@ -11,4 +16,11 @@ router.post('/register',
 router.post('/login',
     userValidate.loginPost,
     userController.loginPost);
+
+router.patch('/profile',
+    verifyTokenUser,
+    upload.single("avatar"),
+    userValidate.profilePath,
+    userController.profilePatch);
+
 export default router;
