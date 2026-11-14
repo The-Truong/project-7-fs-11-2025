@@ -144,10 +144,27 @@ export const createJobPost = async (req: AccountRequest, res: Response) => {
 export const jobList = async (req: AccountRequest, res: Response) => {
   try {
     const id = req.account.id;
-
-    const jobs = await Job.find({
+    const find = {
       companyId: id
-    })
+    }
+    // phân trang
+    const limitItem = 2;
+    let page = 1;
+    if(req.query.page && parseInt(`${req.query.page}`) > 0) {
+      page = parseInt(`${req.query.page}`);
+    }
+    const skip = (page - 1) * limitItem;
+    const totalRecord = await Job.countDocuments(find);
+    const totalPage = Math.ceil(totalRecord / limitItem);
+    const pagination = {
+      totalPage: totalPage,
+      totalRecord: totalRecord
+    }
+    // hết phân trang
+    const jobs = await Job
+    .find(find)
+    .limit(limitItem)
+    .skip(skip)
     .sort({
       createdAt: "desc"
     });
@@ -169,7 +186,40 @@ export const jobList = async (req: AccountRequest, res: Response) => {
     res.json({
       code: "success",
       message: "Lấy dữ liệu thành công",
-      jobs: dataFinal
+      jobs: dataFinal,
+      pagination: pagination
+    })
+  } catch (error) {
+    console.log(error)
+    res.json({
+      code: "error",
+      message: "Không lấy được dữ liệu!",
+    })
+  }
+}
+
+export const jobDetail = async (req: AccountRequest, res: Response) => {
+  try {
+    const companyId = req.account.id;
+    const jobId = req.params.id;
+
+    const jobDetail = await Job.findOne({
+      _id: jobId,
+      companyId: companyId
+    })
+
+    if(!jobDetail) {
+      res.json({
+        code: "error",
+        message: "Không lấy được dữ liệu!",
+      });
+      return;
+    }
+    
+    res.json({
+      code: "success",
+      message: "Lấy dữ liệu thành công",
+      jobDetail: jobDetail
     })
   } catch (error) {
     console.log(error)
