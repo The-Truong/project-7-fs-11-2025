@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import AccountCompany from "../models/account-company.model";
 import jwt from "jsonwebtoken";
 import { AccountRequest } from "../interfaces/request.interface";
+import Job from "../models/job.model";
 
 export const registerPost = async (req: Request, res: Response) => {
   try {
@@ -106,6 +107,30 @@ export const profilePatch = async (req: AccountRequest, res: Response) => {
     res.json({
       code: "success",
       message: "Đã cập nhật",
+    })
+  } catch (error) {
+    console.log(error)
+    res.json({
+      code: "error",
+      message: "Dữ liệu không hợp lệ!",
+    })
+  }
+}
+
+export const createJobPost = async (req: AccountRequest, res: Response) => {
+  try {
+    req.body.companyId = req.account.id;
+    req.body.salaryMin = req.body.salaryMin ? parseInt(req.body.salaryMin) : 0;
+    req.body.salaryMax = req.body.salaryMax ? parseInt(req.body.salaryMax) : 0;
+    req.body.technologys = req.body.technologys ? req.body.technologys.split(', ') : [];
+    req.body.images = req.files ? (req.files as Express.Multer.File[]).map((file) => file.path) : [];
+
+    const newRecord = new Job(req.body);
+    await newRecord.save();
+
+    res.json({
+      code: "success",
+      message: "Đã tạo công việc mới",
     })
   } catch (error) {
     console.log(error)
