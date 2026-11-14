@@ -140,3 +140,42 @@ export const createJobPost = async (req: AccountRequest, res: Response) => {
     })
   }
 }
+
+export const jobList = async (req: AccountRequest, res: Response) => {
+  try {
+    const id = req.account.id;
+
+    const jobs = await Job.find({
+      companyId: id
+    })
+    .sort({
+      createdAt: "desc"
+    });
+
+    const dataFinal = [];
+
+    for (const item of jobs) {
+      dataFinal.push({
+        id: item.id,
+        title: item.title,
+        salaryMin: item.salaryMin,
+        salaryMax: item.salaryMax,
+        position: item.position,
+        workingForm: item.workingForm,
+        technologies: item.technologys
+      })
+    }
+
+    res.json({
+      code: "success",
+      message: "Lấy dữ liệu thành công",
+      jobs: dataFinal
+    })
+  } catch (error) {
+    console.log(error)
+    res.json({
+      code: "error",
+      message: "Không lấy được dữ liệu!",
+    })
+  }
+}
