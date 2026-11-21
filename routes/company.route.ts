@@ -42,4 +42,9 @@ router.patch('/job/edit/:id',
     upload.array('images', 3),
     companyValidate.createJobPost,
     companyController.editJobPatch);
+
+router.delete('/job/delete/:id',
+    verifyTokenCompany,
+    companyController.deleteJobDel);
+
 export default router;

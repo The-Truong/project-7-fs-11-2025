@@ -271,3 +271,39 @@ export const editJobPatch = async (req: AccountRequest, res: Response) => {
     })
   }
 }
+
+export const deleteJobDel = async (req: AccountRequest, res: Response) => {
+  try {
+    const companyId = req.account.id;
+    const jobId = req.params.id;
+
+    const jobDetail = await Job.findOne({
+      _id: jobId,
+      companyId: companyId
+    })
+
+    if(!jobDetail) {
+      res.json({
+        code: "error",
+        message: "Không tìm thấy công việc!",
+      });
+      return;
+    }
+    
+    await Job.deleteOne({
+      _id: jobId,
+      companyId: companyId
+    });
+    
+    res.json({
+      code: "success",
+      message: "Đã xóa"
+    })
+  } catch (error) {
+    console.log(error)
+    res.json({
+      code: "error",
+      message: "Dữ liệu không hợp lệ!",
+    })
+  }
+}
