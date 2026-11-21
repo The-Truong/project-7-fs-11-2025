@@ -47,4 +47,6 @@ router.delete('/job/delete/:id',
     verifyTokenCompany,
     companyController.deleteJobDel);
 
+router.get('/list', companyController.list);
+
 export default router;

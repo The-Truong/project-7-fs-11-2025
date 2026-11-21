@@ -4,6 +4,7 @@ import AccountCompany from "../models/account-company.model";
 import jwt from "jsonwebtoken";
 import { AccountRequest } from "../interfaces/request.interface";
 import Job from "../models/job.model";
+import City from "../models/city.model";
 
 export const registerPost = async (req: Request, res: Response) => {
   try {
@@ -305,5 +306,52 @@ export const deleteJobDel = async (req: AccountRequest, res: Response) => {
       code: "error",
       message: "Dữ liệu không hợp lệ!",
     })
+  }
+}
+
+export const list = async (req: AccountRequest, res: Response) => {
+  try {
+    let limitItem = 20;
+    if(req.query.limitItems && parseInt(`${req.query.limitItems}`) > 0) {
+      limitItem = parseInt(`${req.query.limitItems}`);
+    }
+
+    const companyList = await AccountCompany
+    .find({})
+    .limit(limitItem)
+    .sort({
+      createdAt: "desc"
+    });
+
+    const dataFinal = [];
+
+    for (const item of companyList) {
+      const city = await City.findOne({
+        _id: item.city
+      });
+      const totalJob = await Job.countDocuments({
+        companyId: item.id,
+        //active
+      });
+      dataFinal.push({
+        id: item.id,
+        logo: item.logo,
+        companyName: item.companyName,
+        city: city ? city.name : '',
+        totalJob: totalJob
+      });
+    }
+    
+    res.json({
+      code: "success",
+      message: "Lấy dữ liệu thành công",
+      companyList: dataFinal
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Không lấy được dữ liệu!"
+    });
   }
 }
