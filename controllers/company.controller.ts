@@ -229,3 +229,45 @@ export const jobDetail = async (req: AccountRequest, res: Response) => {
     })
   }
 }
+
+export const editJobPatch = async (req: AccountRequest, res: Response) => {
+  try {
+    const companyId = req.account.id;
+    const jobId = req.params.id;
+
+    const jobDetail = await Job.findOne({
+      _id: jobId,
+      companyId: companyId
+    })
+
+    if(!jobDetail) {
+      res.json({
+        code: "error",
+        message: "Không tìm thấy công việc!",
+      });
+      return;
+    }
+    
+    req.body.salaryMin = req.body.salaryMin ? parseInt(req.body.salaryMin) : 0;
+    req.body.salaryMax = req.body.salaryMax ? parseInt(req.body.salaryMax) : 0;
+    req.body.technologys = req.body.technologys ? req.body.technologys.split(', ') : [];
+    req.body.images = req.files ? (req.files as Express.Multer.File[]).map((file) => file.path) : [];
+
+    await Job.updateOne({
+      _id: jobId,
+      companyId: companyId
+    }, req.body);
+    
+    res.json({
+      code: "success",
+      message: "Đã cập nhật",
+      jobDetail: jobDetail
+    })
+  } catch (error) {
+    console.log(error)
+    res.json({
+      code: "error",
+      message: "Không lấy được dữ liệu!",
+    })
+  }
+}
