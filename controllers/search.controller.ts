@@ -5,7 +5,8 @@ import City from "../models/city.model";
 
 export const search = async (req: Request, res: Response) => {
   try {
-    const dataFinal = [];
+    const dataFinal: any = [];
+    let pagination: any = {};
     if(Object.keys(req.query).length > 0) {
       const find: any = {}
 
@@ -51,8 +52,25 @@ export const search = async (req: Request, res: Response) => {
         find.workingForm = req.query.workingForm;
       }
 
+      // phân trang
+      const limitItem = 2;
+      let page = 1;
+      if(req.query.page && parseInt(`${req.query.page}`) > 0) {
+        page = parseInt(`${req.query.page}`);
+      }
+      const skip = (page - 1) * limitItem;
+      const totalRecord = await Job.countDocuments(find);
+      const totalPage = Math.ceil(totalRecord / limitItem);
+      pagination = {
+        totalPage: totalPage,
+        totalRecord: totalRecord
+      }
+      // hết phân trang
+
       const jobs = await Job
         .find(find)
+        .limit(limitItem)
+        .skip(skip)
         .sort({
           createdAt: "desc"
         })
@@ -82,7 +100,8 @@ export const search = async (req: Request, res: Response) => {
     res.json({
       code:"success",
       message: "Thành công",
-      jobs: dataFinal
+      jobs: dataFinal,
+      pagination: pagination
     })
   } catch (error) {
     console.log(error);
